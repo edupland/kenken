@@ -1,0 +1,8 @@
+#!/bin/bash
+
+./kenken -g500 > /dev/null
+printf "\nCommand tested : ./kenken -g500\n\n"
+gprof -b kenken gmon.out 
+./kenken -sl test/hard12.ken > /dev/null
+printf "\nCommand tested : ./kenken -sl test/hard12.ken\n\n"
+gprof -b kenken gmon.out 

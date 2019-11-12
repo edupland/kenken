@@ -1,0 +1,214 @@
+#!/bin/bash
+
+#printf "Le solveur \"backtracking\" est capable de résoudre des grilles de taille 11 dans la mesure où les Rooms sont maximum de taille 2 et que tous les opérateurs sont présents."
+
+#printf "Nous avons décidé que le seuil de tolérence serait de une seconde."
+
+#printf "Nous ne pouvons pas tester toutes les grilles de taille 11 car il en existe une infinité, donc on partira du principe que si le solveur \"backtracking\" arrive à résoudre une grille générée aléatoirement et de taille 11 avec des Rooms de taille maximum N, on estime qu'il est capable de résoudre toutes les grilles de taille 11."
+
+#time timeout 1 ./kenken -sbt ../grilles/output/taille_11/11adsomu0 > /dev/null
+
+#printf "\n Commande testée : time timeout 1 ./kenken -sbt ../grilles/output/taille_11/11adsomu0\n\n"
+
+#gprof -b kenken gmon.out
+
+#rm gmon.out
+
+#printf "\n\n"
+
+#printf "Nous allons maintenant essayer d'exécuter ce solveur sur une grille de taille 12. Nous estimons de la même manière que pour les grilles de taille 11 que nous ne pouvons pas tester toutes les grilles de taille 12 donc nous allons partir du principe que si le solveur n'arrive pas à résoudre une grille générée aléatoirement de taille 12, on estime qu'il est incapable de résoudre une grille de taille 12.  Alors l'hypothèse émise plus tôt sera valide."
+
+#time timeout 1 ./kenken -sbt ../grilles/output/taille_12/12adsomu0 > /dev/null
+
+#printf "\n Commande testée : time timeout 1 ./kenken -sbt ../grilles/output/taille_12/12adsomu0\n\n"
+
+#gprof -b kenken gmon.out
+
+#printf "Nous voyons que le solveur \"backtracking\" arrive à résoudre des grilles de taille 11 avec des Rooms de taille maximum 2 et n'arrive pas à résoudre des grilles de taille 12 donc la limite de ce solveur pour des Rooms de taille maximum 2 est la taille 11. L'hypothèse est donc valide."
+
+hypo_solveur()
+{
+    printf "Hypothèse $4 : le solveur \"$1\" est capable de résoudre des grilles de taille $2 dans la mesure où les Rooms sont de taille maximum $3. Nous ne pouvons pas tester toutes les grilles de taille $2 car il en existe une infinité, donc on partira du principe que si le solveur \"$1\" arrive à résoudre une grille générée aléatoirement et de taille $2 avec des Rooms de taille maximum $3, on estime qu'il est capable de résoudre toutes les grilles de taille $2.\n"
+}
+
+seuil_tolerance()
+{
+    printf "Nous avons décidé que le seuil de tolérence serait de $1 seconde.\n"
+}
+
+commande()
+{
+    printf "\nCommande testée : $1\n\n"
+}
+
+preuve_hypo()
+{
+    printf "\nAfin de prouver que la taille limite pour la résolution des grilles avec ce solveur, nous allons maintenant essayer d'exécuter ce solveur sur une grille de taille $1. 
+    Nous estimons de la même manière que pour les grilles de taille $2 que nous ne pouvons pas tester toutes les grilles de taille $1 donc nous allons partir du principe que si le solveur n'arrive pas à résoudre une grille générée aléatoirement de taille $1, on estime qu'il est incapable de résoudre une grille de taille $1.
+    Alors l'hypothèse émise plus tôt sera valide.\n"
+}
+
+conclusion()
+{
+    printf "Nous voyons que le solveur \"$1\" arrive à résoudre des grilles de taille $2 avec des Rooms de taille maximum $3 et n'arrive pas à résoudre des grilles de taille $4 donc la limite de ce solveur pour des Rooms de taille maximum $3 est la taille $2. 
+    L'hypothèse est donc valide.\n\n\n"
+}
+
+test_solveur()
+{
+    printf "############################### Solveur $2\n\n\n"
+    hypo_solveur $2 $3 $5 $1
+    seuil_tolerance $6
+    for i in `seq 0 9`
+    do
+	
+        $7 > /dev/null
+    commande $7
+    if [ $(find . -maxdepth 1 -name "gmon.out") ]
+    then
+	gprof -b kenken gmon.out;
+	rm gmon.out
+    else
+	printf "Dépassement du timeout.\n"
+    fi
+    preuve_hypo $4 $3
+    $8 > /dev/null
+    commande $8
+    if [ $(find . -maxdepth 1 -name "gmon.out") ]
+    then
+	gprof -b kenken gmon.out;
+	rm gmon.out
+    else
+	printf "\nDépassement du timeout.\n\n"
+    fi
+    conclusion $2 $3 $5 $4
+}
+
+#test_solveur "backtracking" 11 2 1 "timeout 1 ./kenken -sbt ../grilles/output/taille_11/11adsomu0" 12 "timeout 1 ./kenken -sbt ../grilles/output/taille_12/12adsomu0" 1
+test_solveur 1 "backtracking" 11 12 2 1 "timeout 1 ./kenken -sbt " "timeout 1 ./kenken -sbt "
+
+test_solveur 2 "ses" 4 2 1 "timeout 1 ./kenken -ses ../grilles/output/taille_4/4adso1" 5 "timeout 1 ./kenken -ses ../grilles/output/taille_5/5grid0"
+
+test_solveur 3 "sis" 5 2 1 "timeout 1 ./kenken -sis ../grilles/output/taille_5/5grid0" 6 "timeout 1 ./kenken -sis ../grilles/output/taille_6/6adsomudi0"
+
+test_solveur 4 "slis" 8 2 1 "timeout 1 ./kenken -slis ../grilles/output/taille_8/8grid4" 9 "timeout 1 ./kenken -slis ../grilles/output/taille_9/9adsomudi0"
+
+test_solveur 5 "logic" 19 2 1 "timeout 1 ./kenken -sl ../grilles/output/taille_19/19adsomudi0" 20 "timeout 1 ./kenken -sl ../grilles/output/taille_20/20adsomudi3"
+
+#M5------------------------------
+
+test_solveur 6 "backtracking" 8 5 1 "timeout 1 ./kenken -sbt ../grilles/output/taille_8/8grid5M0" 9 "timeout 1 ./kenken -sbt ../grilles/output/taille_9/9grid5M0"
+
+test_solveur 7 "ses" 4 5 1 "timeout 1 ./kenken -ses ../grilles/output/taille_4/4grid5M2" 5 "timeout 1 ./kenken -ses ../grilles/output/taille_5/5grid5M0"
+
+test_solveur 8 "logic" 10 5 1 "timeout 1 ./kenken -sl ../grilles/output/taille_10/10grid5M0" 11 "timeout 1 ./kenken -sl ../grilles/output/taille_11/11grid5M0"
+
+printf "############################### Solveur logic\n\n\n"
+
+printf "Hypothèse 9 : Le solveur de grilles avec seulement des multiplications est plus rapide qu'avec d'autres oprérateurs."
+timeout 1 ./kenken  -sl ../grilles/output/taille_35/35mu0> /dev/null
+commande "./kenken -sl ../grilles/output/taille_35/35mu0\n"
+if [ $(find . -maxdepth 1 -name "gmon.out") ]
+then
+    gprof -b kenken gmon.out;
+    rm gmon.out
+else
+    printf "Dépassement du timeout.\n"
+fi
+printf "\nAfin de prouver que les grilles avec uniquement des multiplications sont plus facilement solvable que les autres, 
+        nous allons maintenant essayer de résoudre une grille de la même taille que la précédente mais avec des opérateurs en plus de la multiplication."
+timeout 1 ./kenken -sl ../grilles/output/taille_35/35adsomudi0 > /dev/null
+commande "./kenken -sl ../grilles/output/taille_35/35adsomudi0\n"
+if [ $(find . -maxdepth 1 -name "gmon.out") ]
+then
+    gprof -b kenken gmon.out;
+    rm gmon.out
+else
+    printf "Dépassement du timeout.\n\n"
+fi
+printf "Nous voyons bien que la résolution d'une grille de taille 35x35 avec plusieurs opérateurs n'est pas possible en moins dune seconde alors qu'avec cette taille et uniquement des multiplications, la résolution est possible.
+        Donc l'hypothèse est validée.\n\n"
+
+printf "############################### Solveur logic -a\n\n\n"
+
+printf "Hypothèse 10 : La limite du solveur de grilles qui donne toutes les solutions est 19.
+        Nous ne pouvons pas tester toutes les grilles de taille 19x19 car il en existe une infinité, donc on partira du principe que si le solveur arrive à résoudre une grille générée aléatoirement et de taille 19x19 avec des Rooms de taille maximum 2, 
+        on estime qu'il est capable de résoudre toutes les grilles de taille 19x19.\n"
+timeout 1 ./kenken -sl ../grilles/output/taille_19/19adsomudi1 -a> /dev/null
+commande "./kenken -sl ../grilles/output/taille_19/19adsomudi1 -a\n"
+if [ $(find . -maxdepth 1 -name "gmon.out") ]
+then
+    gprof -b kenken gmon.out;
+    rm gmon.out
+else
+    printf "Dépassement du timeout.\n"
+fi
+printf "\nAfin de prouver que les grilles avec uniquement des multiplications sont plus facilement solvable que les autres, 
+        nous allons maintenant essayer de résoudre une grille de la même taille que la précédente mais avec des opérateurs en plus de la multiplication.
+        Nous estimons de la même manière que pour les grilles de taille 19x19 que nous ne pouvons pas tester toutes les grilles de taille 20x20 donc nous allons partir du principe que si le solveur n'arrive pas à résoudre une grille générée aléatoirement de taille 20x20, 
+        on estime qu'il est incapable de résoudre une grille de taille 20x20."
+timeout 1 ./kenken -sl ../grilles/output/taille_20/20adsomudi1 -a > /dev/null
+commande "./kenken -sl ../grilles/output/taille_20/20adsomudi1 -a\n"
+if [ $(find . -maxdepth 1 -name "gmon.out") ]
+then
+    gprof -b kenken gmon.out;
+    rm gmon.out
+else
+    printf "Dépassement du timeout.\n\n"
+fi
+printf "Nous voyons bien que la résolution qui donne toutes les solutions d'une grille de taille 20x20 n'est pas possible en moins dune seconde alors qu'avec la taille 19x19, la résolution qui donne toutes les solutions est possible.
+        Donc l'hypothèse est validée.\n\n"
+
+printf "############################### Generator\n\n\n"
+
+printf "Hypothèse 11 : Le générateur de base est capable de générer des grilles de taille 250x250 en un temps inférieur au seuil de tolérance (1 seconde). 
+        Nous ne pouvons pas créer toutes les grilles de taille 250x250 donc on part du principe que s'il arrive à créer une grille aléatoirement de taille 250x250 alors il arrivera à créer toutes les grilles de taille 250x250."
+timeout 1 ./kenken -g250 > /dev/null
+commande "./kenken -g250\n"
+if [ $(find . -maxdepth 1 -name "gmon.out") ]
+then
+    gprof -b kenken gmon.out;
+    rm gmon.out
+else
+    printf "Dépassement du timeout.\n"
+fi
+printf "\nAfin de prouver que la limite de temps de génération d'une grille aléatoire est inférieur au seuil de tolérance est 250x250,
+        nous allons maintenant essayer de générer une grille de taille 300x300. De la même manière que pour la création des grilles 250x250, comme on ne peut pas créer toutes les grilles de taille 300x300, s'il n'arrive pas à en créer une seule en dessous du seuil critique (1 seconde), il n'arrivera pour aucune grille."
+timeout 1 ./kenken -g300 > /dev/null
+commande "./kenken -g300\n"
+if [ $(find . -maxdepth 1 -name "gmon.out") ]
+then
+    gprof -b kenken gmon.out;
+    rm gmon.out
+else
+    printf "Dépassement du timeout.\n\n"
+fi
+printf "Nous voyons bien que la génération d'une grille aléatoire de taille 300 met plus de temps que le seuil de tolérance (1 seconde) alors que la génération d'une grille aléatoire de taille 250 met moins d'une seconde.
+        Donc l'hypothèse est validée.\n\n"
+
+printf "############################### Generator\n\n\n"
+
+printf "Hypothèse 12 : Le générateur d'une grille avec une seule solution et avec une taille maximum pour les Rooms de 2 est capable de générer des grilles de taille 55x55 en un temps inférieur au seuil de tolérance (1 seconde). 
+Nous ne pouvons pas créer toutes les grilles de taille 55x55 donc on part du principe que s'il arrive à créer une grille aléatoirement de taille 55x55 alors il arrivera à créer toutes les grilles de taille 55x55"
+timeout 1 ./kenken -g55 -M2 -u > /dev/null
+commande "./kenken -g55 -M2 -u\n"
+if [ $(find . -maxdepth 1 -name "gmon.out") ]
+then
+    gprof -b kenken gmon.out;
+    rm gmon.out
+else
+    printf "Dépassement du timeout.\n"
+fi
+printf "Nous allons maintenant essayer de générer une grille de taille 60x60. De la même manière que pour la création des grilles 55x55, comme on ne peut pas créer toutes les grilles de taille 60x60, 
+        s'il n'arrive pas à en créer une seule en dessous du seuil critique (1 seconde), il n'arrivera pour aucune grille."
+timeout 1 ./kenken -g60 -M2 -u> /dev/null
+commande "./kenken -g60 -M2 -u\n"
+if [ $(find . -maxdepth 1 -name "gmon.out") ]
+then
+    gprof -b kenken gmon.out;
+    rm gmon.out
+else
+    printf "Dépassement du timeout.\n"
+fi
+printf "Nous voyons bien que la génération d'une grille aléatoire de taille 60 avec une solution unique met plus de temps que le seuil de tolérance (1 seconde) alors que la génération d'une grille aléatoire de taille 55 avec une unique solution met moins d'une seconde.
+        Donc l'hypothèse est validée.\n\n"
